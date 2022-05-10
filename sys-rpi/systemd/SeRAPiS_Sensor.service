@@ -1,0 +1,14 @@
+[Unit]
+Description=SeRAPiS Sensor Service
+After=multi-user.target
+
+[Service]
+User=pi
+Type=simple
+Restart=always
+ExecStart=/usr/bin/python3 /home/pi/mySensorService.py
+StandardOutput=file:/home/pi/sensor_stdout
+StandardError=file:/home/pi/sensor_stderr
+
+[Install]
+WantedBy=multi-user.target
