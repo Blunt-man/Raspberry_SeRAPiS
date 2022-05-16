@@ -1,10 +1,16 @@
 # Raspberry_SeRAPiS
-
+Sensor Relay Action Pi System
 ## Info
 
 ## Hardware
-  Raspberry Pi GPIO Pin map                                                                         
-  
+### Raspberry Pi GPIO Example Pin map
+    Situation with 
+<ul>
+        <li>8 Relays</li>
+        <li>2 DHT22 Sensors</li>
+        <li>ePaper Display</li>
+</ul>
+
 | Info | BCM | wPi | Name | Mode | V | Physical | Physical | V | Mode | Name | wPi | BCM | Info |
 |:---|---:|---:|---:|---:|:---:|---:|:---|:---:|:---|:---|:---|---:|---:|
 |DHT 22 | | | 3.3v | | | 1 | 2 | | | 5v | | | |           
@@ -26,4 +32,10 @@
 | Relay CH 3 | 13 | 23 | GPIO.23 | OUT | 0 | 33 | 34 | | | 0v | | | |
 | Relay CH 5 | 19 | 24 | GPIO.24 | OUT | 1 | 35 | 36 | 1 | OUT | GPIO.27 | 27 | 16 | Relay CH 4 |
 | Relay CH 8 | 26 | 25 | GPIO.25 | OUT | 0 | 37 | 38 | 0 | OUT | GPIO.28 | 28 | 20 | Relay CH 6 |
-|  |  |  | 0v |  |  | 39 | 40 | 0 | OUT | GPIO.29 | 29 | 21 | Relay CH 7 |
+| | | | 0v | | | 39 | 40 | 0 | OUT | GPIO.29 | 29 | 21 | Relay CH 7 |
+
+## Database Layout
+| ID | Name | Host | Relay_Ch_Names | Relay_Routine_id |
+|---|---|---|---|---|
+| | | | | |
+

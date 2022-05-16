@@ -31,6 +31,14 @@ def db_get_Box_ID_with_Hostname(cur, host):                 # get Database Box_i
     cur.execute(f"SELECT id FROM Box WHERE Host='{host}'")
     return cur.fetchone()[0]
 
+config = ConfigParser()
+config.read('config.ini')
+
+dbuser = config.get('database','user')
+dbpassword = config.get('database','password')
+dbhost = config.get('database','host')
+dbport = config.getint('database','port')
+dbdatabase = config.get('database','database')
 
 
 
