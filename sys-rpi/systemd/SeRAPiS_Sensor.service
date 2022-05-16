@@ -6,7 +6,7 @@ After=multi-user.target
 User=pi
 Type=simple
 Restart=always
-ExecStart=/usr/bin/python3 /home/pi/mySensorService.py
+ExecStart=/usr/bin/python3 /home/pi/myServiceSensors.py
 StandardOutput=file:/home/pi/sensor_stdout
 StandardError=file:/home/pi/sensor_stderr
 

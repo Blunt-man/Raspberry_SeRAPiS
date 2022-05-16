@@ -6,7 +6,7 @@ After=multi-user.target
 User=pi
 Type=simple
 Restart=always
-ExecStart=/usr/bin/python3 /home/pi/myRelayService.py
+ExecStart=/usr/bin/python3 /home/pi/myServiceRelays.py
 StandardOutput=file:/home/pi/relay_stdout
 StandardError=file:/home/pi/relay_stderr
 
