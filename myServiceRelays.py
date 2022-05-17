@@ -37,11 +37,9 @@ class thr_Relay_Hardware_controll(threading.Thread):
         for i in range(0,self.count,1):
             if self.Situation[i] != self.hardware.state[i]:
                 if self.Situation[i] == 1:
-                    logger.error(self.logger_prefix+" Switch Relay " + str(i) + " ON")
-                    #self.hardware.Switch_ON_Ch(i)
+                    self.hardware.Switch_ON_Ch(i)
                 else:
-                    logger.error(self.logger_prefix+" Switch Relay " + str(i) + " OFF")
-                    #self.hardware.Switch_OFF_Ch(i)
+                    self.hardware.Switch_OFF_Ch(i)
 
 
 def thread_database_rule_check():
