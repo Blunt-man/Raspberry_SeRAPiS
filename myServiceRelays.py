@@ -8,13 +8,18 @@ from configparser import ConfigParser
 
 Relay_Situation = []
 Relay_Situation_mutex = threading.Lock()
+###################################################
+#   Hardware Thread
+#
+#       checks if Relay_Situation has changed
+#       and applys those changes to the Hardware
 
 class thr_Relay_Hardware_controll(threading.Thread):
-    def __init__(self, update_rate, count, pinout, Situation):
+    def __init__(self, update_rate, pinout, Situation):
         threading.Thread.__init__(self)
         self.logger_prefix = "Hardware Controll Thread - "
         self.update_rate = update_rate
-        self.count = count
+        self.count = len(pinout)
         self.pinout = pinout
         self.Situation = Situation.copy()
         self.hardware = relay_rasp.Relay(self.pinout, self.Situation)
@@ -40,10 +45,11 @@ class thr_Relay_Hardware_controll(threading.Thread):
     
     def apply_Situation_to_Relays(self):
         for i in range(0,self.count,1):
-            if int(self.Situation[i]) == 1:
-                self.hardware.Switch_ON_Ch(i)
-            else:
-                self.hardware.Switch_OFF_Ch(i)
+            if int(self.Situation[i]) != int(self.hardware.state[i]):
+                if int(self.Situation[i]) == 1:
+                    self.hardware.Switch_ON_Ch(i)
+                else:
+                    self.hardware.Switch_OFF_Ch(i)
 
 class thr_Relay_Database_Rule_Check(threading.Thread):
     def __init__(self, update_rate):
@@ -96,7 +102,6 @@ cfg_logging_level_debug = config.getboolean('debug','log_debug')
 cfg_logging_level_info = config.getboolean('debug','log_info')
 cfg_logging_level_warnings = config.getboolean('debug','log_warnings')
 #Relay Config
-cfg_relay_count = config.getint('Relay','relay-count')  #relay count
 cfg_BCM_GPIO_Pinout = config.get('Relay','BCM-GPIO')
 cfg_BCM_GPIO_Pinout = cfg_BCM_GPIO_Pinout.replace('[', '')
 cfg_BCM_GPIO_Pinout = cfg_BCM_GPIO_Pinout.replace(']', '')
@@ -137,12 +142,15 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - myServiceRelay - %(level
 fh.setFormatter(formatter)                                                                              #
 logger.addHandler(fh)  
 
-
+####
+if len(cfg_BCM_GPIO_Pinout) != len(cfg_relay_Situation):
+    logger.warning("Config - \"activation_Situation\" and \"BCM-GPIO\" have unequal lenght")
+    #TODO: cut Situation to fit BCM - Pinout or fill Situation up with switched off relays
 #############################################
 # Start Threads
 #############################################
 logger.debug('Starting Threads')
-thread_hardware = thr_Relay_Hardware_controll(cfg_relay_update_rate, cfg_relay_count, cfg_BCM_GPIO_Pinout, cfg_relay_Situation)
+thread_hardware = thr_Relay_Hardware_controll(cfg_relay_update_rate, cfg_BCM_GPIO_Pinout, cfg_relay_Situation)
 thread_database = thr_Relay_Database_Rule_Check(cfg_relay_update_rate)
 thread_hardware.start()
 thread_database.start()

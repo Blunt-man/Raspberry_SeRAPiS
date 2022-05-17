@@ -5,7 +5,7 @@ logging_prefix = "[relay_rasp.py] - "
 class Relay():
     def __init__(self, pinout, state):
         self.pinout = pinout
-        self.state = state
+        self.state = state.copy()
         self.logger = logging.getLogger("_SeRAPiS_")
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
@@ -27,6 +27,7 @@ class Relay():
         try:
             if Chanel <= len(self.pinout)-1 and Chanel >= 0:
                 GPIO.output(self.pinout[Chanel],GPIO.LOW)
+                self.state[Chanel] = 1
                 self.logger.debug(logging_prefix + "Switch_ON_Ch: "+str(Chanel)+" on Pin " + str(self.pinout[Chanel]))
         except:
             self.logger.error(logging_prefix + 'Switch_ON_Ch ',traceback.format_exc())
@@ -35,6 +36,7 @@ class Relay():
         try:
             if Chanel <= len(self.pinout)-1 and Chanel >= 0:
                 GPIO.output(self.pinout[Chanel],GPIO.HIGH)
+                self.state[Chanel] = 0
                 self.logger.debug(logging_prefix + "Switch_OFF_Ch: " + str(Chanel)+ " on Pin "+str(self.pinout[Chanel]))
         except:
             self.logger.error(logging_prefix + 'Switch_OFF_Ch ',traceback.format_exc())
