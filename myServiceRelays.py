@@ -10,13 +10,13 @@ Relay_Situation = []
 Relay_Situation_mutex = threading.Lock()
 
 class thr_Relay_Hardware_controll(threading.Thread):
-    def __init__(self, count, pinout, Situation, update_rate):
+    def __init__(self, update_rate, count, pinout, Situation):
         threading.Thread.__init__(self)
         self.logger_prefix = "Hardware Controll Thread - "
+        self.update_rate = update_rate
         self.count = count
         self.pinout = pinout
-        self.Situation = Situation
-        self.update_rate = update_rate
+        self.Situation = Situation.copy()
         self.hardware = relay_rasp.Relay(self.pinout, self.Situation)
 
 
@@ -26,24 +26,59 @@ class thr_Relay_Hardware_controll(threading.Thread):
 
         while True:
             Relay_Situation_mutex.acquire
-            if (self.Situation != Relay_Situation):
-                self.Situation = Relay_Situation
-                logger.debug(self.logger_prefix+"Situation has changed from "+self.State+" to "+self.Situation)
+            situation_changed = False
+            logger.debug(self.logger_prefix+"Check for Change" + str(self.Situation) + str(Relay_Situation))
+            for i in range(0,self.count,1):
+                if(int(self.Situation[i]) != int(Relay_Situation[i])):
+                    situation_changed = True
+            if (situation_changed):
+                self.Situation = Relay_Situation.copy()
+                logger.debug(self.logger_prefix+"Situation has changed from "+str(Relay_Situation)+" to "+str(self.Situation))
                 self.apply_Situation_to_Relays()
             Relay_Situation_mutex.release
             time.sleep(self.update_rate)
     
     def apply_Situation_to_Relays(self):
         for i in range(0,self.count,1):
-            if self.Situation[i] != self.hardware.state[i]:
-                if self.Situation[i] == 1:
-                    self.hardware.Switch_ON_Ch(i)
-                else:
-                    self.hardware.Switch_OFF_Ch(i)
+            if int(self.Situation[i]) == 1:
+                self.hardware.Switch_ON_Ch(i)
+            else:
+                self.hardware.Switch_OFF_Ch(i)
+
+class thr_Relay_Database_Rule_Check(threading.Thread):
+    def __init__(self, update_rate):
+        threading.Thread.__init__(self)
+        self.logger_prefix = "Database Rule Check Thread - "
+        self.update_rate = update_rate
+    
+    def run(self):
+        logger.debug(self.logger_prefix+"Start Database Rule Check Thread")
+        global Relay_Situation
+        while True:
+            time.sleep(self.update_rate*2)
+            self.change_Relay_Situation()
+            logger.debug(self.logger_prefix+"new situation " + str(Relay_Situation))
+    
+    def change_Relay_Situation(self):
+        Relay_Situation_mutex.acquire
+        i = -1
+        for r in range(0,len(Relay_Situation),1):
+            if Relay_Situation[r] == 1:
+                i = r
+        if i == -1:
+            Relay_Situation[0] = 1
+            i = 0
+        elif i == len(Relay_Situation)-1:
+            Relay_Situation[len(Relay_Situation)-1] = 0
+            Relay_Situation[0] = 1
+            i = 0
+        else:
+            Relay_Situation[i] = 0
+            Relay_Situation[i+1] = 1
+            i += 1
+        Relay_Situation_mutex.release
 
 
-def thread_database_rule_check():
-    logger.debug("Start Relay Database Rules Thread")
 
 def thread_json_rpc():
     logger.debug("Start Json RPC Thread")
@@ -107,6 +142,9 @@ logger.addHandler(fh)
 # Start Threads
 #############################################
 logger.debug('Starting Threads')
-thread_hardware = thr_Relay_Hardware_controll(cfg_relay_count, cfg_BCM_GPIO_Pinout, cfg_relay_Situation, cfg_relay_update_rate)
+thread_hardware = thr_Relay_Hardware_controll(cfg_relay_update_rate, cfg_relay_count, cfg_BCM_GPIO_Pinout, cfg_relay_Situation)
+thread_database = thr_Relay_Database_Rule_Check(cfg_relay_update_rate)
 thread_hardware.start()
+thread_database.start()
 thread_hardware.join()
+thread_database.join()
