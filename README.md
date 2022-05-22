@@ -37,6 +37,9 @@ myServiceRelays.py ***- unfinished***
 ---
 ### Sensors
 
+[_example_sensor](sensors/_example_sensor_README.md)<br />
+[dht](sensors/dht_README.md)
+
 #### myServiceSensors.py ***- unfinished***
 <br /> runns as systemD Process
 <br /> starts a Thread per configured Sensor
