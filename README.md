@@ -2,14 +2,20 @@
 Sensor Relay Action Pi System
 
 ```Python
-proj-dir
- ├── __init__.py
- ├── package1
- │   ├── __init__.py
- │   ├── module1.py
- └── package2
-     ├── __init__.py
-     └── module2.py 
+home_dir
+├── sensors
+│   ├── _example_sensor_README.md
+│   ├── _example_sensor.py
+│   ├── dht_README.md
+│   └── dht.py
+│
+├── myServiceDisplay.py
+├── myServiceRelays.py
+├── myServiceSensors.py
+│
+├── config.ini
+├── database.py
+├── relay_rasp.py
 ```
 
 ## Info
