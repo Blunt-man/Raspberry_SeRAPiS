@@ -1,10 +1,53 @@
 # Raspberry_SeRAPiS
 Sensor Relay Action Pi System
-## Info
 
+```Python
+proj-dir
+ ├── __init__.py
+ ├── package1
+ │   ├── __init__.py
+ │   ├── module1.py
+ └── package2
+     ├── __init__.py
+     └── module2.py 
+```
+
+## Info
+---
+one or more Raspberry Pis
+<ul>
+    <li>Collecting Sensor Data</li>
+    <li>Controlling Relays</li>
+    <li>Displaying Data</li>
+</ul>
+<br />
+
+
+### Relays
+myServiceRelays.py ***- unfinished*** 
+<br /> runns as systemD Process
+<br /> controlls the Relys...
+
+---
+### Sensors
+
+#### myServiceSensors.py ***- unfinished***
+<br /> runns as systemD Process
+<br /> starts a Thread per configured Sensor
+<br /> new Sensor librarys can be added into the config.ini file
+
+---
+#### Sensor library
+a Sensor library has
+<br /> gets a json string with its configuration (from the config.ini)
+<br /> returns an array 'double' representing the Value of the mesurement and a corresponding string representing the type
+<br /> and a json Structure with the raw Data (if a Sensor library)
+
+---
+---
 ## Hardware
 ### Raspberry Pi GPIO Example Pin map
-    Situation with 
+Situation with 
 <ul>
         <li>8 Relays</li>
         <li>2 DHT22 Sensors</li>
@@ -34,8 +77,82 @@ Sensor Relay Action Pi System
 | Relay CH 8 | 26 | 25 | GPIO.25 | OUT | 0 | 37 | 38 | 0 | OUT | GPIO.28 | 28 | 20 | Relay CH 6 |
 | | | | 0v | | | 39 | 40 | 0 | OUT | GPIO.29 | 29 | 21 | Relay CH 7 |
 
+---
+---
 ## Database Layout
-| ID | Name | Host | Relay_Ch_Names | Relay_Routine_id |
-|---|---|---|---|---|
-| | | | | |
+### Tables
+#### Box
+| ID | Name | Host | Relay_Ch_Names | Relay_Routine_id | Relay_logging |
+|---|---|---|---|---|---|
+| *int* | *string* | *string* | *string* | *int* | *Bool* |
+|-|-|-|-|-|-|
+|---|Box Name|network Address|Relay_chanel description|---|---|
 
+#### Relay_Routine
+| ID | Relay_Count | Name | UTC_update |
+|---|---|---|---|
+| *int* | *int*| *string* | *int* |
+
+ <br /> <br />
+'Relay_settings' describes a Rule <br />each Symbol Representing a Relay separate by '|' <br /> Symbols are:
+
+|||
+|--|--|
+|1| Relay gets Switched ON, if rule applys|
+|0| Relay gets Switched OFF, if rule applys|
+|#| Relay State will be ignored i.e. stays the same if rule applys|
+|+| Relay State has to be switched ON otherwise rule will be ignored|
+|-| Relay State has to be switched OFF otherwise rule will be ignored|
+||
+
+
+#### Relay_Routine_day
+| ID | Relay_Routine_id | daily_offset_sec | Relay_seting | info |
+|---|---|---|---|---|
+|*int* | *int* | *int* | *string* | *string* |
+|-|-|-|-|-|
+|||3600|0\|0\|0\|0|Example: <br />every Day at 1:00:00 UTC <br />all 4 Relays get switched OFF|
+|||46800|1\|#\|+\|0|Example: <br />every Day at 13:00:00 UTC <br />if the 3rd Relay is Switched on <br />switch on 1st Relay <br /> adopt state of 2nd Relay <br />switch off 4th Relay
+
+#### Relay_Routine_hour
+| ID | Relay_Routine_id | hourly_offset_sec | Relay_seting | info |
+|---|---|---|---|---|
+|*int* | *int* | *int* | *string* | *string* |
+|-|-|-|-|-|
+
+#### Relay_Special_Event
+| ID | Box_id | UTC_Event | Relay_seting | info |
+|---|---|---|---|---|
+| *int* | *int* | *int* | *string* | *string* |
+|-|-|-|-|-|
+|||1652802500|1\|#\|#\|#|on the 17. Mai 2022 at 15:48:20<br />Switch ON 1st Relay<br/>apodt the State of the other 3 Relays
+
+#### Relay_Sensor Rules
+| ID | Relay_Routine_id |
+|---|---|
+| *int* | *int* |
+|-|-|
+|||
+
+#### Sensors
+| ID | Box_ID | Chanel | Working | utilisation_counter | fst_use_UTC | Sensor_Type | info |
+|---|---|---|---|---|---|---|---|
+| *int* | *int* | *int* | *Bool* | *int* | *int* | *string* | *string* |
+|-|-|-|-|-|-|-|-|
+| - | - |1|True|1|1652802500|DHT22|DHT22 returning relative humidity and temperature|
+
+#### timeline_Sensor
+| ID | Sensor_ID | UTC | Type | Value |
+|---|---|---|---|---|
+| *int* | *int* | *int* | *string* | *double* |
+|-|-|-|-|-|
+| - | 1 | 1652802500 | temp | 22.4 |
+| - | 1 | 1652802500 | rel_humid | 52.6 |
+
+#### timeline_Relays
+| ID | Box_ID | UTC | Situation |
+|---|---|---|---|
+| *int* | *int* | *int* | *string* |
+|-|-|-|-|
+||1|1652802500|0\|0\|0\|0|
+||1|1652803000|1\|0\|0\|0|
