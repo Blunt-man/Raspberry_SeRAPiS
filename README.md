@@ -17,7 +17,21 @@ home_dir
 ├── database.py
 ├── relay_rasp.py
 ```
+## Install
+### Using Debian "wheezy" (5.10.103-v7+) on Raspberry Pi 3 Model B
+Install python 3
+```console
+$sudo apt update
+$sudo apt upgrade
+$sudo apt-get install python3 python3-pip 
+```
 
+allow remote client connection on MariaDB (remember to allow both ipv4 and ipv6)
+```console
+$sudo mysql db_name
+SELECT User, Host FROM mysql.user WHERE Host <> 'localhost';
+GRANT ALL PRIVILEGES ON *.* TO 'user'@'adress' IDENTIFIED BY 'password' WITH GRANT OPTION;
+```
 ## Info
 ---
 one or more Raspberry Pis
