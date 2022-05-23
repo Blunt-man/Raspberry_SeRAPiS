@@ -1,11 +1,24 @@
 # DHT
 reads dht sensor
 ## Install
-````#sudo pip3 install Adafruit_DHT```` 
+```console
+$sudo pip3 install Adafruit_DHT
+```
 
 ## Constructor
+```Python
+#example .ini
+    json_Sensors =[
+    ...,{
+            "chanel": x,
+            "lib":"/dht.py",
+            "update_rate": 1200,
+            "config":"{\"Sensor\": 11, \"BCM-GPIO\": 27}",
+        },...
+    ]
 ```
-json_config as String structure
+```Python
+config as String structure
     {
         "Sensor": int Sensor Value
         "BCM-GPIO": BCM pin as int
