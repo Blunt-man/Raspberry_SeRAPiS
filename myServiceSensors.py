@@ -5,6 +5,8 @@ import logging
 import importlib.util
 from logging.handlers import RotatingFileHandler
 from configparser import ConfigParser
+import database
+Box_id = 0
 
 
 
@@ -16,6 +18,8 @@ class thr_Sensor(threading.Thread):
         self.update_rate = update_rate
         self.lib = lib
         self.config = config
+        self.dbconnector = database.DB_Sensor(self.chanel)
+        #load Sensor class from 'lib'
         self.sensor_spec = importlib.util.spec_from_file_location("Sensor",lib)
         self.sensor = importlib.util.module_from_spec(self.sensor_spec)
         self.sensor_spec.loader.exec_module(self.sensor)
@@ -29,7 +33,9 @@ class thr_Sensor(threading.Thread):
                     sens_type = self.sensor.Readings[0]['Type']
                     sens_value =self.sensor.Readings[0]['value']
                     logger.debug(self.logger_prefix+ "Time :" + str(sens_time)+", Type:" + sens_type + ", Value:" + str(sens_value))
+                    self.dbconnector.add_Sensor_timeline(sens_time,sens_type,sens_value)
                     self.sensor.Readings.pop(0)
+                self.dbconnector.utilise_Sensor()
             else:
                 #TODO: write into Database that the sensor isnt working on the 1st time
                 #TODO: check Database if sensor is working again --> if sensor got changed and db got updated
@@ -78,6 +84,9 @@ logger.addHandler(fh)
 #############################################
 # INI config check
 #############################################
+
+database.load_ini()
+
 
 running_sensor_threads = []
 tmpObjects = json.loads(cfg_JsonSensors)
