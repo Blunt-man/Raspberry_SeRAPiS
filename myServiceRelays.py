@@ -1,10 +1,13 @@
+import datetime
 import threading
 import time
 import logging
+from xmlrpc.client import Boolean
 import relay_rasp
 import sys
 from logging.handlers import RotatingFileHandler
 from configparser import ConfigParser
+import database
 
 Relay_Situation = []
 Relay_Situation_mutex = threading.Lock()
@@ -52,19 +55,48 @@ class thr_Relay_Hardware_controll(threading.Thread):
                     self.hardware.Switch_OFF_Ch(i)
 
 class thr_Relay_Database_Rule_Check(threading.Thread):
-    def __init__(self, update_rate):
+    def __init__(self, update_rate:'float'):
         threading.Thread.__init__(self)
         self.logger_prefix = "Database Rule Check Thread - "
         self.update_rate = update_rate
+        self.database = database.DB_Relay()
     
     def run(self):
         logger.debug(self.logger_prefix+"Start Database Rule Check Thread")
         global Relay_Situation
         while True:
             time.sleep(self.update_rate*2)
-            self.change_Relay_Situation()
-            logger.debug(self.logger_prefix+"new situation " + str(Relay_Situation))
+            self.database.Update_Routine()
+            self.db_check_if_Relay_Routine_applys()
     
+
+    def db_check_if_Relay_Routine_applys(self):
+        global Relay_Situation
+        now_time = datetime.datetime.now() #+ datetime.timedelta(hours= 7, minutes=20)
+        now_Situation = self.database.Situation
+        second_of_the_day = (((now_time.hour*60)+now_time.minute)*60)+now_time.second
+        second_of_the_day = datetime.timedelta(seconds=second_of_the_day)
+        x = -1
+        for i in range(len(self.database.Rules_Routine_day)): # find last applyable rule
+            if self.database.Rules_Routine_day[i]['time'] <= second_of_the_day:
+                x = i
+        if x < self.database.Rules_Routine_day__last_applyed: # new day
+            self.database.Rules_Routine_day__last_applyed = -1
+        if (self.database.Rules_Routine_day__last_applyed != x): # apply rules
+            for i in range(self.database.Rules_Routine_day__last_applyed+1,x+1,1):
+                if(does_rule_apply(now_Situation,self.database.Rules_Routine_day[i]["Rule"])):
+                    apply_rule(now_Situation,self.database.Rules_Routine_day[i]["Rule"])
+                    Relay_Situation_mutex.acquire
+                    Relay_Situation = self.database.Situation.copy()
+                    Relay_Situation_mutex.release
+                    print("apply rule:",self.database.Rules_Routine_day[i]["time"],"Rule:",self.database.Rules_Routine_day[i]["Rule"])#rules to apply
+                
+            self.database.Rules_Routine_day__last_applyed = i
+        #print (second_of_the_day, self.database.Situation) # last time Relay checked
+
+
+
+
     def change_Relay_Situation(self):
         Relay_Situation_mutex.acquire
         i = -1
@@ -84,12 +116,40 @@ class thr_Relay_Database_Rule_Check(threading.Thread):
             i += 1
         Relay_Situation_mutex.release
 
-
+def does_rule_apply(Situation, Rule) -> Boolean:
+    rule_applys = True
+    for ri in range(len(Rule)):       #check for negative + rule
+        if Rule[ri] == '+':
+            if Situation[ri] != 1:
+                rule_applys = False
+    for ri in range(len(Rule)):       #check for negative - rule
+        if Rule[ri] == '-':
+            if Situation[ri] != 0:
+                rule_applys = False
+    return rule_applys
+def apply_rule(Situation, Rule):
+    for r in range(len(Rule)):
+        if Rule[r] == '1':
+            Situation[r] = 1
+        if Rule[r] == '0':
+            Situation[r] = 0
 
 def thread_json_rpc():
     logger.debug("Start Json RPC Thread")
 
-
+def bool__does_rule_apply_now(rule):
+    a = True
+    Relay_Situation_mutex.acquire
+    for ri in range(len(rule)):       #check for negative + rule
+        if rule[ri] == '+':
+            if int(Relay_Situation[ri]) != 1:
+                a = False
+    for ri in range(len(rule)):       #check for negative - rule
+        if rule[ri] == '-':
+            if int(Relay_Situation[ri]) != 0:
+                a = False
+    Relay_Situation_mutex.release
+    return a
 
 #############################################
 # load ini
@@ -142,10 +202,17 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - myServiceRelay - %(level
 fh.setFormatter(formatter)                                                                              #
 logger.addHandler(fh)  
 
-####
+#
+database.init()
+
+#############################################
+# INI config check
+#############################################
 if len(cfg_BCM_GPIO_Pinout) != len(cfg_relay_Situation):
     logger.warning("Config - \"activation_Situation\" and \"BCM-GPIO\" have unequal lenght")
-    #TODO: cut Situation to fit BCM - Pinout or fill Situation up with switched off relays
+    #TODO: CONFIGERROR : cut Situation to fit BCM - Pinout or fill Situation up with switched off relays
+
+
 #############################################
 # Start Threads
 #############################################
