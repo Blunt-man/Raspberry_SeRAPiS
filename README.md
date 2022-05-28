@@ -100,10 +100,16 @@ Situation with
 | Relay CH 8 | 26 | 25 | GPIO.25 | OUT | 0 | 37 | 38 | 0 | OUT | GPIO.28 | 28 | 20 | Relay CH 6 |
 | | | | 0v | | | 39 | 40 | 0 | OUT | GPIO.29 | 29 | 21 | Relay CH 7 |
 
+
+![Alt text](./nfo/example_setup-rpi.svg)
+<img src="./nfo/example_setup-rpi.svg">
 ---
 ---
 ## Database Layout
+using MariaDB
 ### Tables
+
+
 #### Box
 | ID | Name | Host | Relay_Ch_Names | Relay_Routine_id | Relay_logging |
 |---|---|---|---|---|---|
