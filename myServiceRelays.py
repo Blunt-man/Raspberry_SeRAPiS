@@ -54,6 +54,9 @@ class thr_Relay_Hardware_controll(threading.Thread):
                 self.apply_Situation_to_Relays()
             Relay_Situation_mutex.release
             time.sleep(self.update_rate)
+        logger.error(self.logger_prefix+"Interrupted by Signal - All Relays get Switched Off")
+        for i in range(0,self.count,1):
+            self.hardware.Switch_OFF_Ch(i)
     
     def apply_Situation_to_Relays(self):
         for i in range(0,self.count,1):
@@ -78,6 +81,7 @@ class thr_Relay_Database_Rule_Check(threading.Thread):
             time.sleep(self.update_rate*2)
             self.database.Update_Routine()
             self.db_check_if_Relay_Routine_applys()
+        logger.error(self.logger_prefix+"Signal Interrupted ")
     
 
     def db_check_if_Relay_Routine_applys(self):
@@ -99,7 +103,7 @@ class thr_Relay_Database_Rule_Check(threading.Thread):
                     Relay_Situation_mutex.acquire
                     Relay_Situation = self.database.Situation.copy()
                     Relay_Situation_mutex.release
-                    print("apply rule:",self.database.Rules_Routine_day[i]["time"],"Rule:",self.database.Rules_Routine_day[i]["Rule"])#rules to apply
+                    logger.debug(self.logger_prefix + "apply-rule -- time: "+ str(self.database.Rules_Routine_day[i]["time"]) +" , Rule "+str(self.database.Rules_Routine_day[i]["Rule"]))
                 
             self.database.Rules_Routine_day__last_applyed = i
         #print (second_of_the_day, self.database.Situation) # last time Relay checked
