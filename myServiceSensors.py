@@ -1,3 +1,4 @@
+import signal
 import threading
 import time
 import json
@@ -6,8 +7,13 @@ import importlib.util
 from logging.handlers import RotatingFileHandler
 from configparser import ConfigParser
 import database
-Box_id = 0
+RUN = True
 
+def signal_handler(signum, frame):
+    logger.error(f"Process got Terminated by signum : {signal.Signals(signum)}")
+
+    global RUN
+    RUN = False    
 
 
 class thr_Sensor(threading.Thread):
@@ -26,7 +32,8 @@ class thr_Sensor(threading.Thread):
         self.sensor.Sensor.init(config)
     def run(self):
         logger.debug(self.logger_prefix+"Start Sensor")
-        while True:
+        global RUN
+        while RUN:
             if(self.sensor.Sensor.read()):
                 while (len(self.sensor.Readings) != 0):
                     sens_time = self.sensor.Readings[0]['time']
@@ -41,6 +48,7 @@ class thr_Sensor(threading.Thread):
                 #TODO: check Database if sensor is working again --> if sensor got changed and db got updated
                 logger.warning(self.logger_prefix+ "Sensor not Working")
             time.sleep(self.update_rate)
+        logger.error(f"Thread Sensor Chanel: {self.chanel} got terminated by Signal") 
 
 #############################################
 # load ini
@@ -84,8 +92,10 @@ logger.addHandler(fh)
 #############################################
 # INI config check
 #############################################
-
-database.load_ini()
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+######
+database.init()
 
 
 running_sensor_threads = []
@@ -101,6 +111,8 @@ for x in tmpObjects:
     Sensor = thr_Sensor(chanel,update_rate,lib,config)
     running_sensor_threads.append(Sensor)
     Sensor.start()
+
+signal.pause()
 
 for x in running_sensor_threads:
     x.join()

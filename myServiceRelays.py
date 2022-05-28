@@ -1,4 +1,5 @@
 import datetime
+import signal
 import threading
 import time
 import logging
@@ -8,6 +9,14 @@ import sys
 from logging.handlers import RotatingFileHandler
 from configparser import ConfigParser
 import database
+
+RUN = True
+
+def signal_handler(signum, frame):
+    logger.error(f"Process got Terminated by signum : {signal.Signals(signum)}")
+
+    global RUN
+    RUN = False  
 
 Relay_Situation = []
 Relay_Situation_mutex = threading.Lock()
@@ -31,8 +40,8 @@ class thr_Relay_Hardware_controll(threading.Thread):
     def run(self):
         logger.debug(self.logger_prefix+"Start Hardware Controll Thread")
         global Relay_Situation
-
-        while True:
+        global RUN
+        while RUN:
             Relay_Situation_mutex.acquire
             situation_changed = False
             logger.debug(self.logger_prefix+"Check for Change" + str(self.Situation) + str(Relay_Situation))
@@ -64,7 +73,8 @@ class thr_Relay_Database_Rule_Check(threading.Thread):
     def run(self):
         logger.debug(self.logger_prefix+"Start Database Rule Check Thread")
         global Relay_Situation
-        while True:
+        global RUN
+        while RUN:
             time.sleep(self.update_rate*2)
             self.database.Update_Routine()
             self.db_check_if_Relay_Routine_applys()
@@ -93,28 +103,6 @@ class thr_Relay_Database_Rule_Check(threading.Thread):
                 
             self.database.Rules_Routine_day__last_applyed = i
         #print (second_of_the_day, self.database.Situation) # last time Relay checked
-
-
-
-
-    def change_Relay_Situation(self):
-        Relay_Situation_mutex.acquire
-        i = -1
-        for r in range(0,len(Relay_Situation),1):
-            if Relay_Situation[r] == 1:
-                i = r
-        if i == -1:
-            Relay_Situation[0] = 1
-            i = 0
-        elif i == len(Relay_Situation)-1:
-            Relay_Situation[len(Relay_Situation)-1] = 0
-            Relay_Situation[0] = 1
-            i = 0
-        else:
-            Relay_Situation[i] = 0
-            Relay_Situation[i+1] = 1
-            i += 1
-        Relay_Situation_mutex.release
 
 def does_rule_apply(Situation, Rule) -> Boolean:
     rule_applys = True
@@ -200,7 +188,12 @@ else:
 fh = RotatingFileHandler(cfg_logging_location, maxBytes=2000000, backupCount=10)                        #
 formatter = logging.Formatter('%(asctime)s - %(name)s - myServiceRelay - %(levelname)s - %(message)s')  #
 fh.setFormatter(formatter)                                                                              #
-logger.addHandler(fh)  
+logger.addHandler(fh) 
+
+##
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 #
 database.init()
@@ -221,5 +214,6 @@ thread_hardware = thr_Relay_Hardware_controll(cfg_relay_update_rate, cfg_BCM_GPI
 thread_database = thr_Relay_Database_Rule_Check(cfg_relay_update_rate)
 thread_hardware.start()
 thread_database.start()
+signal.pause()
 thread_hardware.join()
 thread_database.join()
