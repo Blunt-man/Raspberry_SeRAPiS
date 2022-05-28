@@ -101,8 +101,8 @@ Situation with
 | | | | 0v | | | 39 | 40 | 0 | OUT | GPIO.29 | 29 | 21 | Relay CH 7 |
 
 
-![Alt text](./nfo/example_setup-rpi.svg)
-<img src="./nfo/example_setup-rpi.svg">
+![Alt text](nfo/example_setup-rpi.svg)
+<img src="nfo/example_setup-rpi.svg">
 ---
 ---
 ## Database Layout
