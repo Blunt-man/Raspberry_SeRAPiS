@@ -5,7 +5,7 @@
 ---
 This Project can get setup on one or more Raspberry Pi's to Collect and Display Sensor Data, and Switch Relays.<br />
 
-Each Raspberry can perform on or more of the roles:
+Each Raspberry can perform one or more of the roles:
 
  - [Relays](README.md#Relays)
  - [Sensors](README.md#Sensors)
@@ -181,6 +181,18 @@ every sensor has:
  - the update rate in seconds
  - the config as described by the used sensor library
 
+### Sensor Readings
+every Sensor reading can return multiple Results to be stored into the Database Table<[timeline_Sensor](README.md#timeline_Sensor)>, distinguished by a Type description<br />
+
+```Python
+entry = {
+    "time" : time,
+    "Type" : type,
+    "value" : value
+}
+```
+
+
 ### new Sensors
 should use [_example_sensor](sensors/_example_sensor_README.md) as blueprint
 ### existing Sensors
@@ -302,6 +314,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'user'@'adress' IDENTIFIED BY 'password' WITH GRA
 |-|-|-|-|
 ||1|1652802500|0\|0\|0\|0|
 ||1|1652803000|1\|0\|0\|0|
+
 
 
 ## Example Setup
