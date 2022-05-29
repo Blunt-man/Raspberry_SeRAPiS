@@ -304,6 +304,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'user'@'adress' IDENTIFIED BY 'password' WITH GRA
 ||1|1652803000|1\|0\|0\|0|
 
 
+
 ## Example Setup
 
 | Info | BCM | wPi | Name | Mode | V | Physical | Physical | V | Mode | Name | wPi | BCM | Info |
@@ -325,9 +326,9 @@ GRANT ALL PRIVILEGES ON *.* TO 'user'@'adress' IDENTIFIED BY 'password' WITH GRA
 | Relay CH 1 | 5 | 21 | GPIO.21 | OUT | 1 | 29 | 30 | | | 0v | | | |
 | Relay CH 2 | 6 | 22 | GPIO.22 | OUT | 1 | 31 | 32 | 0 | OUT  | GPIO.26 | 26 | 12 | dht22 2 |
 | Relay CH 3 | 13 | 23 | GPIO.23 | OUT | 0 | 33 | 34 | | | 0v | | | |
-| Relay CH 5 | 19 | 24 | GPIO.24 | OUT | 1 | 35 | 36 | 1 | OUT | GPIO.27 | 27 | 16 | Relay CH 4 |
-| Relay CH 8 | 26 | 25 | GPIO.25 | OUT | 0 | 37 | 38 | 0 | OUT | GPIO.28 | 28 | 20 | Relay CH 6 |
-| | | | 0v | | | 39 | 40 | 0 | OUT | GPIO.29 | 29 | 21 | Relay CH 7 |
+| Relay CH 4 | 19 | 24 | GPIO.24 | OUT | 1 | 35 | 36 | 1 | OUT | GPIO.27 | 27 | 16 | Relay CH 8 |
+| Relay CH 5 | 26 | 25 | GPIO.25 | OUT | 0 | 37 | 38 | 0 | OUT | GPIO.28 | 28 | 20 | Relay CH 7 |
+| | | | 0v | | | 39 | 40 | 0 | OUT | GPIO.29 | 29 | 21 | Relay CH 6 |
 
 
 <img src="nfo/example_setup-rpi.svg">
