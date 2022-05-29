@@ -316,7 +316,6 @@ GRANT ALL PRIVILEGES ON *.* TO 'user'@'adress' IDENTIFIED BY 'password' WITH GRA
 ||1|1652803000|1\|0\|0\|0|
 
 
-
 ## Example Setup
 
 | Info | BCM | wPi | Name | Mode | V | Physical | Physical | V | Mode | Name | wPi | BCM | Info |
@@ -382,12 +381,12 @@ json_Sensors = [
                 {"chanel": 1, 
                  "lib": "/dht.py", 
                  "update_rate": 5, 
-                 "config": "{\"Sensor\": 11, \"BCM-GPIO\": 12}"
+                 "config": "{\"Sensor\": 11, \"BCM-GPIO\": 4}"
                 }, 
                 {"chanel": 2, 
                  "lib": "/dht.py", 
                  "update_rate": 10, 
-                 "config": "{\"Sensor\": 11, \"BCM-GPIO\": 27}"
+                 "config": "{\"Sensor\": 11, \"BCM-GPIO\": 12}"
                 }
                ]
 ```
