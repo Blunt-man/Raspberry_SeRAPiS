@@ -1,4 +1,7 @@
 # DHT
+
+using <br /> 
+[Adafruit_Python_DHT](https://github.com/adafruit/Adafruit_Python_DHT) -  ([LICENSE](https://github.com/adafruit/Adafruit_Python_DHT/blob/master/LICENSE))<br>
 reads dht sensor
 ## Install
 ```console
