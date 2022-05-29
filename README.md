@@ -304,28 +304,6 @@ GRANT ALL PRIVILEGES ON *.* TO 'user'@'adress' IDENTIFIED BY 'password' WITH GRA
 ||1|1652803000|1\|0\|0\|0|
 
 
-
-
-## Sensor Rules
-
-gets up to [count Sensor Data]
-
-using [Reverse Polish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation)
-
-| Command | Pops | Poped entrys| Description | example |
-|---|---|---|---|---|
-|'Data'|
-|'loopData'|
-|||
-|'med'|0|```[]```|Calculates the Median from the Dataset|```[]```|
-|'sum'|n+4|```[    ,'('    ,...{n entrys}...    ,')'    ,m    ,n    ]```|calculates the sum from entry m to entry n|```[]```|
-|'prod'|n+4|```[    ,'('    ,...{n entrys}...    ,')'    ,m    ,n    ]```|Calculates the Produkt from entry m to entry n|```[]```|
-|||||
-|'+'|2|```[x,y]```||```[]```
-|'-'|2|```[x,y]```||```[]```
-|'*'|2|```[x,y]```||```[]```
-|'/'|2|```[x,y]```||```[]```
-
 ## Example Setup
 
 | Info | BCM | wPi | Name | Mode | V | Physical | Physical | V | Mode | Name | wPi | BCM | Info |
