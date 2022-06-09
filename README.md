@@ -21,13 +21,15 @@ Features:
 Planned Features:
 
  - Switch relays based on Sensor Data
+    - two-level controller ( [Bang–bang control](https://en.wikipedia.org/wiki/Bang%E2%80%93bang_control) )
  - Switch relays directly using json-rpc
- - use a Display to show latest Sensor Data
+ - provide pwm signals (for actuator controll) using [PID controller](https://en.wikipedia.org/wiki/PID_controller) based Sensor Data processing
+ - use a Display to show latest Sensor Data / State of actuators
  - provide a Web-interface to:
    - Display Sensor-Data
    - Display and change Relay Rules
    - Change the Relay Situation directly
-
+ - Connect a PicoPi as Secondary Actuator / Sensor Controll using [UART](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter)
 ## Info
 Realised on Debian ["wheezy" <5.10.103-v7+>]<br />
 using:
