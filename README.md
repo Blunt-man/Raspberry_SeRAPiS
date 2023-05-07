@@ -1,6 +1,6 @@
 # Raspberry_SeRAPiS
 ---
-**Se**nsor **R**elay **A**ction **Pi** **S**ystem <br />
+**Se**nsor **R**elay **A**ctuator **Pi** **S**ystem <br />
 
 ---
 This Project can get setup on one or more Raspberry Pi's to Collect and Display Sensor Data, and Switch Relays.<br />
